@@ -1,0 +1,160 @@
+{
+  "format": 1,
+  "restore": {
+    "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.UnitTest\\Flipdish.Recruiting.UnitTest.csproj": {}
+  },
+  "projects": {
+    "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.UnitTest\\Flipdish.Recruiting.UnitTest.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.UnitTest\\Flipdish.Recruiting.UnitTest.csproj",
+        "projectName": "Flipdish.Recruiting.UnitTest",
+        "projectPath": "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.UnitTest\\Flipdish.Recruiting.UnitTest.csproj",
+        "packagesPath": "C:\\Users\\Romix\\.nuget\\packages\\",
+        "outputPath": "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.UnitTest\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Romix\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {
+              "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.WebhookReceiver\\Flipdish.Recruiting.WebhookReceiver.csproj": {
+                "projectPath": "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.WebhookReceiver\\Flipdish.Recruiting.WebhookReceiver.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.9.4, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.16.1, )"
+            },
+            "NUnit": {
+              "target": "Package",
+              "version": "[3.13.1, )"
+            },
+            "NUnit3TestAdapter": {
+              "target": "Package",
+              "version": "[3.17.0, )"
+            },
+            "RestSharp": {
+              "target": "Package",
+              "version": "[106.13.0, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[3.0.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.WebhookReceiver\\Flipdish.Recruiting.WebhookReceiver.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.WebhookReceiver\\Flipdish.Recruiting.WebhookReceiver.csproj",
+        "projectName": "Flipdish.Recruiting.WebhookReceiver",
+        "projectPath": "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.WebhookReceiver\\Flipdish.Recruiting.WebhookReceiver.csproj",
+        "packagesPath": "C:\\Users\\Romix\\.nuget\\packages\\",
+        "outputPath": "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.WebhookReceiver\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Romix\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
+          "dependencies": {
+            "DotLiquid": {
+              "target": "Package",
+              "version": "[2.0.366, )"
+            },
+            "Microsoft.NET.Sdk.Functions": {
+              "target": "Package",
+              "version": "[3.0.7, )"
+            },
+            "NetBarcode": {
+              "target": "Package",
+              "version": "[1.1.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
