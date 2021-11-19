@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Flipdish.Recruiting.UnitTest
 {
     [TestFixture]
-    public class EmailService
+    public class EmailServiceTest
     {
 
     }
