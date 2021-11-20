@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "AtMG94h2z3V5AeoSMMdFWaE6JKik2JtrcZvF4RwFiqtt1+hMSh1MvA/J4bEjF1srbiyW5AnsaT+O1GGYssyixA==",
+  "dgSpecHash": "VvqTfJf/m7xYPD79J8cvDoD52RUZMeTAKxcUSqLixlZfv+6cRjV3Ppy/fuHD+dmNlLMwI+eHQgyF8+2PCLWkXg==",
   "success": true,
   "projectFilePath": "F:\\repoTest\\flipdishtest\\Flipdish.Recruiting.Core\\Flipdish.Recruiting.Core.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Romix\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
   "logs": []
 }

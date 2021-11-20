@@ -1,6 +1,7 @@
 F:\repoTest\flipdishtest\Flipdish.Recruiting.Core\bin\Debug\netcoreapp3.1\Flipdish.Recruiting.Core.deps.json
 F:\repoTest\flipdishtest\Flipdish.Recruiting.Core\bin\Debug\netcoreapp3.1\Flipdish.Recruiting.Core.dll
 F:\repoTest\flipdishtest\Flipdish.Recruiting.Core\bin\Debug\netcoreapp3.1\Flipdish.Recruiting.Core.pdb
+F:\repoTest\flipdishtest\Flipdish.Recruiting.Core\obj\Debug\netcoreapp3.1\Flipdish.Recruiting.Core.csproj.AssemblyReference.cache
 F:\repoTest\flipdishtest\Flipdish.Recruiting.Core\obj\Debug\netcoreapp3.1\Flipdish.Recruiting.Core.GeneratedMSBuildEditorConfig.editorconfig
 F:\repoTest\flipdishtest\Flipdish.Recruiting.Core\obj\Debug\netcoreapp3.1\Flipdish.Recruiting.Core.AssemblyInfoInputs.cache
 F:\repoTest\flipdishtest\Flipdish.Recruiting.Core\obj\Debug\netcoreapp3.1\Flipdish.Recruiting.Core.AssemblyInfo.cs
