@@ -25,7 +25,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// <param name="price">Price.</param>
         /// <param name="menuItemOptionDisplayOrder">Menu item option display order.</param>
         /// <param name="menuItemOptionSetDisplayOrder">Menu item option set display order.</param>
-        public OrderItemOption(Dictionary<string, string> metadata = default(Dictionary<string, string>), Guid? menuItemOptionPublicId = default(Guid?), int? menuItemOptionId = default(int?), bool? isMasterOptionSetItem = default(bool?), string name = default(string), double? price = default(double?), int? menuItemOptionDisplayOrder = default(int?), int? menuItemOptionSetDisplayOrder = default(int?))
+        public OrderItemOption(Dictionary<string, string> metadata = default, Guid? menuItemOptionPublicId = default, int? menuItemOptionId = default, bool? isMasterOptionSetItem = default, string name = default, double? price = default, int? menuItemOptionDisplayOrder = default, int? menuItemOptionSetDisplayOrder = default)
         {
             Metadata = metadata;
             MenuItemOptionPublicId = menuItemOptionPublicId;

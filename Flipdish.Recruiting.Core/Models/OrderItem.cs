@@ -29,7 +29,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// <param name="menuItemId">Menu item identifier.</param>
         /// <param name="menuItemDisplayOrder">Menu item display order.</param>
         /// <param name="isAvailable">Is available.</param>
-        public OrderItem(List<OrderItemOption> orderItemOptions = default(List<OrderItemOption>), Dictionary<string, string> metadata = default(Dictionary<string, string>), Guid? menuItemPublicId = default(Guid?), string menuSectionName = default(string), int? menuSectionDisplayOrder = default(int?), string name = default(string), string description = default(string), double? price = default(double?), double? priceIncludingOptionSetItems = default(double?), int? menuItemId = default(int?), int? menuItemDisplayOrder = default(int?), bool? isAvailable = default(bool?))
+        public OrderItem(List<OrderItemOption> orderItemOptions = default, Dictionary<string, string> metadata = default, Guid? menuItemPublicId = default, string menuSectionName = default, int? menuSectionDisplayOrder = default, string name = default, string description = default, double? price = default, double? priceIncludingOptionSetItems = default, int? menuItemId = default, int? menuItemDisplayOrder = default, bool? isAvailable = default)
         {
             OrderItemOptions = orderItemOptions;
             Metadata = metadata;

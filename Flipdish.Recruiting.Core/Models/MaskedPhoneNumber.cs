@@ -19,7 +19,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// <param name="isEnabled">Defines if the feature is enabled.</param>
         /// <param name="phoneNumber">Defines the phone number to call.</param>
         /// <param name="code">Defines the code to enter.</param>
-        public MaskedPhoneNumber(bool? isEnabled = default(bool?), string phoneNumber = default(string), string code = default(string))
+        public MaskedPhoneNumber(bool? isEnabled = default, string phoneNumber = default, string code = default)
         {
             IsEnabled = isEnabled;
             PhoneNumber = phoneNumber;

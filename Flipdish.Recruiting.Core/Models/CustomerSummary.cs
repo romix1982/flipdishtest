@@ -21,7 +21,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// <param name="emailAddress">Customer email address.</param>
         /// <param name="phoneNumberLocalFormat">Customer local phone number.</param>
         /// <param name="phoneNumber">Customer phone number.</param>
-        public CustomerSummary(int? id = default(int?), string name = default(string), string emailAddress = default(string), string phoneNumberLocalFormat = default(string), string phoneNumber = default(string))
+        public CustomerSummary(int? id = default, string name = default, string emailAddress = default, string phoneNumberLocalFormat = default, string phoneNumber = default)
         {
             Id = id;
             Name = name;

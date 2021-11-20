@@ -19,7 +19,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// <param name="feeAmount">Fee amount.</param>
         /// <param name="percentageRate">Percentage rate.</param>
         /// <param name="perTransactionFee">Per transaction fee.</param>
-        public FeeSummary(double? feeAmount = default(double?), double? percentageRate = default(double?), double? perTransactionFee = default(double?))
+        public FeeSummary(double? feeAmount = default, double? percentageRate = default, double? perTransactionFee = default)
         {
             FeeAmount = feeAmount;
             PercentageRate = percentageRate;

@@ -719,7 +719,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// <param name="coordinates">Latitude and longitude of the store.</param>
         /// <param name="storeTimezone">Timezone of store.</param>
         /// <param name="storeGroupId">Store group id of store.</param>
-        public StoreSummary(int? id = default(int?), string name = default(string), int? menuId = default(int?), Dictionary<string, string> metadata = default(Dictionary<string, string>), CurrencyEnum? currency = default(CurrencyEnum?), Coordinates coordinates = default(Coordinates), string storeTimezone = default(string), int? storeGroupId = default(int?))
+        public StoreSummary(int? id = default, string name = default, int? menuId = default, Dictionary<string, string> metadata = default, CurrencyEnum? currency = default, Coordinates coordinates = default, string storeTimezone = default, int? storeGroupId = default)
         {
             Id = id;
             Name = name;

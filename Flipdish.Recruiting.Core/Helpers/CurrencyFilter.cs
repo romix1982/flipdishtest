@@ -3,6 +3,6 @@ namespace Flipdish.Recruiting.Core.Helpers
 {
     static class CurrencyFilter
     {
-        public static string currency(decimal input) => input.ToString("N2");
+        public static string Currency(decimal input) => input.ToString("N2");
     }
 }

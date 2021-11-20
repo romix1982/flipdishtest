@@ -119,7 +119,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// <param name="amount">Voucher amount.</param>
         /// <param name="type">Voucher type.</param>
         /// <param name="subType">Voucher sub type.</param>
-        public OrderVoucherSummary(string name = default(string), string description = default(string), string code = default(string), double? amount = default(double?), TypeEnum? type = default(TypeEnum?), SubTypeEnum? subType = default(SubTypeEnum?))
+        public OrderVoucherSummary(string name = default, string description = default, string code = default, double? amount = default, TypeEnum? type = default, SubTypeEnum? subType = default)
         {
             Name = name;
             Description = description;

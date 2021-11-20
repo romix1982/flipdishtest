@@ -23,7 +23,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// <param name="postCode">Post code.</param>
         /// <param name="deliveryInstructions">Delivery instructions.</param>
         /// <param name="prettyAddressString">Formatted, pretty address string.</param>
-        public DeliveryLocation(Coordinates coordinates = default(Coordinates), string building = default(string), string street = default(string), string town = default(string), string postCode = default(string), string deliveryInstructions = default(string), string prettyAddressString = default(string))
+        public DeliveryLocation(Coordinates coordinates = default, string building = default, string street = default, string town = default, string postCode = default, string deliveryInstructions = default, string prettyAddressString = default)
         {
             Coordinates = coordinates;
             Building = building;

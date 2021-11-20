@@ -24,7 +24,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// <param name="createTime">The time of creation of the event.</param>
         /// <param name="position">Position.</param>
         /// <param name="appId">App id.</param>
-        public OrderCreatedEvent(string eventName = default(string), string description = default(string), DateTime? orderCreatedTime = default(DateTime?), Order order = default(Order), Guid? flipdishEventId = default(Guid?), DateTime? createTime = default(DateTime?), int? position = default(int?), string appId = default(string))
+        public OrderCreatedEvent(string eventName = default, string description = default, DateTime? orderCreatedTime = default, Order order = default, Guid? flipdishEventId = default, DateTime? createTime = default, int? position = default, string appId = default)
         {
             EventName = eventName;
             Description = description;

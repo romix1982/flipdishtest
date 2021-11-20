@@ -89,19 +89,19 @@ namespace Flipdish.Recruiting.Core.Helpers
             else
             {
                 var theta = lon1 - lon2;
-                var dist = Math.Sin(deg2rad(lat1)) * Math.Sin(deg2rad(lat2)) + Math.Cos(deg2rad(lat1)) * Math.Cos(deg2rad(lat2)) * Math.Cos(deg2rad(theta));
+                var dist = Math.Sin(ConvertDegToRad(lat1)) * Math.Sin(ConvertDegToRad(lat2)) + Math.Cos(ConvertDegToRad(lat1)) * Math.Cos(ConvertDegToRad(lat2)) * Math.Cos(ConvertDegToRad(theta));
                 dist = Math.Acos(dist);
-                dist = rad2deg(dist);
+                dist = ConvertRadToDeg(dist);
                 dist = dist * 60 * 1.1515;
 
-                dist = dist * 1.609344;
+                dist *= 1.609344;
 
                 return (dist);
             }
         }
 
-        private static double deg2rad(double deg) => (deg * Math.PI / 180.0);
+        private static double ConvertDegToRad(double deg) => (deg * Math.PI / 180.0);
 
-        private static double rad2deg(double rad) => (rad / Math.PI * 180.0);
+        private static double ConvertRadToDeg(double rad) => (rad / Math.PI * 180.0);
     }
 }

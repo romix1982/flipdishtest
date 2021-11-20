@@ -18,7 +18,7 @@ namespace Flipdish.Recruiting.Core.Models
         /// </summary>
         /// <param name="latitude">Latitude.</param>
         /// <param name="longitude">Longitude.</param>
-        public Coordinates(double? latitude = default(double?), double? longitude = default(double?))
+        public Coordinates(double? latitude = default, double? longitude = default)
         {
            Latitude = latitude;
            Longitude = longitude;

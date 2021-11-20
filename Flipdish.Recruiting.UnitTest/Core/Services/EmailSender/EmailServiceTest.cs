@@ -6,7 +6,7 @@ namespace Flipdish.Recruiting.UnitTest.Core.Services.EmailSender
     [TestFixture]
     public class EmailServiceTest
     {
-        private EmailService _emailService;
+        private readonly EmailService _emailService;
 
         [SetUp]
         public void SetUp()
