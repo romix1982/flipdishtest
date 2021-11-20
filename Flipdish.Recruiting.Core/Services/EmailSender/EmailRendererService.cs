@@ -26,13 +26,11 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
         private Currency _currency;
         private string _barcodeMetadataKey;
         private Dictionary<string, Stream> _imagesWithNames;
-      //  private ILogger _log;
+
         public Dictionary<string, Stream> ImagesWithNames => _imagesWithNames;
 
         public EmailRendererService()
-        {
-
-        }
+        {}
 
         public string RenderEmailOrder(Order order, string appNameId, string barcodeMetadataKey, string appDirectory, Currency currency)
         {
@@ -48,16 +46,16 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
 
             var domain = SettingsService.Flipdish_DomainWithScheme;
             var orderId = _order.OrderId.Value;
-            var mapUrl = String.Empty;
-            var staticMapUrl = String.Empty;
+            var mapUrl = string.Empty;
+            var staticMapUrl = string.Empty;
             double? airDistance = null;
             var supportNumber = SettingsService.RestaurantSupportNumber;
             var physicalRestaurantName = _order.Store.Name;
             var paymentAccountDescription = _order.PaymentAccountDescription;
             var deliveryTypeNum = (int)_order.DeliveryType;
             var orderPlacedLocal = _order.PlacedTime.Value.UtcToLocalTime(_order.Store.StoreTimezone);
-            var tsOrderPlaced = EtaResponseMethods.GetClocksToString(orderPlacedLocal);
-            var tsOrderPlacedDayMonth = EtaResponseMethods.GetDateString(orderPlacedLocal);
+            var tsOrderPlaced = EtaResponseMethods.GetClocksToFormattedString(orderPlacedLocal);
+            var tsOrderPlacedDayMonth = EtaResponseMethods.GetDateToFormattedString(orderPlacedLocal);
             var paid_unpaid = _order.PaymentAccountType != Order.PaymentAccountTypeEnum.Cash ? "PAID" : "UNPAID";
             var foodAmount = _order.OrderItemsAmount.Value.ToRawHtmlCurrencyString(_currency);
             var onlineProcessingFee = _order.ProcessingFee.Value.ToRawHtmlCurrencyString(_currency);
@@ -131,7 +129,7 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
                         orderMsg = "NEW DINE IN ORDER ";
                         break;
                     default:
-                        var orderMsgLower = $"NEW {_order.PickupLocationType.ToString()} ORDER";
+                        var orderMsgLower = $"NEW {_order.PickupLocationType} ORDER";
                         orderMsg = orderMsgLower.ToUpper();
                         break;
                 }
@@ -166,7 +164,6 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
             var resTotal = "Total";
             var resCustomer_Location = "Customer Location";
             var resTax = "Tax";
-
 
             var paramaters = new RenderParameters(CultureInfo.CurrentCulture)
             {
@@ -237,7 +234,6 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
             _appNameId = appNameId;
             _barcodeMetadataKey = barcodeMetadataKey;
             _appDirectory = appDirectory;
-          //  _log = log;
             _currency = currency;
             _imagesWithNames = new Dictionary<string, Stream>();
         }
@@ -249,8 +245,8 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
 
             var reqForLocal = _order.RequestedForTime.Value.UtcToLocalTime(_order.Store.StoreTimezone);
 
-            var reqestedForDateStr = EtaResponseMethods.GetDateString(reqForLocal);
-            var reqestedForTimeStr = EtaResponseMethods.GetClocksToString(reqForLocal);
+            var reqestedForDateStr = EtaResponseMethods.GetDateToFormattedString(reqForLocal);
+            var reqestedForTimeStr = EtaResponseMethods.GetClocksToFormattedString(reqForLocal);
 
             var resPREORDER_FOR = "PREORDER FOR";
 
@@ -282,7 +278,7 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
             var resView_Order = "View Order";
 
             var templateStr = GetLiquidFileAsString("OrderStatusPartial.liquid");
-            DotLiquid.Template template = Template.Parse(templateStr);
+            Template template = Template.Parse(templateStr);
             var paramaters = new RenderParameters(CultureInfo.CurrentCulture)
             {
                 LocalVariables = Hash.FromAnonymousObject(new
@@ -488,8 +484,7 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
             }
             catch (Exception ex)
             {
-               // _log.LogError(ex, $"{barcodeNumbers} is not a valid barcode for order #{_order.OrderId}");
-                return null;
+                throw new Exception($"{barcodeNumbers} is not a valid barcode for order #{_order.OrderId}", ex);
             }
         }
 

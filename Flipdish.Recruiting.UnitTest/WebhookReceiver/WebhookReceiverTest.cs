@@ -10,10 +10,7 @@ namespace Flipdish.Recruiting.UnitTest
         //private Mock<IExecutionContext> _executionContext
 
         [SetUp]
-        public void Setup()
-        {
-            _logger = new Mock<ILogger>();
-        }
+        public void Setup() => _logger = new Mock<ILogger>();
 
         [Test]
         public void Test1()

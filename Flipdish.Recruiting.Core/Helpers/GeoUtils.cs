@@ -9,7 +9,6 @@ namespace Flipdish.Recruiting.Core.Helpers
     {
         public static string GetDynamicMapUrl(double centerLatitude, double centerLongitude, int zoom)
         {
-            // latitude
             string direction;
             double absoluteValue;
             if (centerLatitude < 0)
@@ -25,7 +24,6 @@ namespace Flipdish.Recruiting.Core.Helpers
 
             var dmsLatitude = GetDms(absoluteValue) + direction;
 
-            // longitude
             if (centerLongitude < 0)
             {
                 direction = "W";

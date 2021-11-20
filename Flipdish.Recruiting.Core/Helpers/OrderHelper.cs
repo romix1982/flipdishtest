@@ -104,10 +104,7 @@ namespace Flipdish.Recruiting.Core.Helpers
             return result;
         }
 
-        public static string ToSymbol(this Currency c)
-        {
-            return c.GetCurrencyItem().Symbol;
-        }
+        public static string ToSymbol(this Currency c) => c.GetCurrencyItem().Symbol;
 
         public static CurrencyItem GetCurrencyItem(this Currency currency)
         {
@@ -123,38 +120,18 @@ namespace Flipdish.Recruiting.Core.Helpers
 
         public static string GetTableServiceCategoryLabel(this Order.TableServiceCatagoryEnum tableServiceCatagory)
         {
-            string result;
-            switch (tableServiceCatagory)
+            var result = tableServiceCatagory switch
             {
-                case Order.TableServiceCatagoryEnum.Generic:
-                    result = "Generic Service n ";
-                    break;
-                case Order.TableServiceCatagoryEnum.Villa:
-                    result = "Villa Service n ";
-                    break;
-                case Order.TableServiceCatagoryEnum.House:
-                    result = "House Service n ";
-                    break;
-                case Order.TableServiceCatagoryEnum.Room:
-                    result = "Room Service n ";
-                    break;
-                case Order.TableServiceCatagoryEnum.Area:
-                    result = "Area Service n ";
-                    break;
-                case Order.TableServiceCatagoryEnum.Table:
-                    result = "Table Service n ";
-                    break;
-                case Order.TableServiceCatagoryEnum.ParkingBay:
-                    result = ".Parking Bay Service n ";
-                    break;
-                case Order.TableServiceCatagoryEnum.Gate:
-                    result = "Gate Service n ";
-                    break;
-                default:
-                    result = ">";
-                    break;
-            }
-
+                Order.TableServiceCatagoryEnum.Generic => "Generic Service n ",
+                Order.TableServiceCatagoryEnum.Villa => "Villa Service n ",
+                Order.TableServiceCatagoryEnum.House => "House Service n ",
+                Order.TableServiceCatagoryEnum.Room => "Room Service n ",
+                Order.TableServiceCatagoryEnum.Area => "Area Service n ",
+                Order.TableServiceCatagoryEnum.Table => "Table Service n ",
+                Order.TableServiceCatagoryEnum.ParkingBay => ".Parking Bay Service n ",
+                Order.TableServiceCatagoryEnum.Gate => "Gate Service n ",
+                _ => ">",
+            };
             return result;
         }
 
@@ -162,7 +139,7 @@ namespace Flipdish.Recruiting.Core.Helpers
         {
             try
             {
-                TimeZoneInfo timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneInfoId);
+                var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneInfoId);
                 return TimeZoneInfo.ConvertTimeFromUtc(utcTime, timeZoneInfo);
             }
             catch (Exception)
