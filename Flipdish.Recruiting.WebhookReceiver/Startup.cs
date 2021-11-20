@@ -11,8 +11,9 @@ namespace Flipdish.Recruiting.WebhookReceiver
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddHttpClient();
-            builder.Services.AddTransient<IEmailService, Core.Services.EmailSender.EmailService>();
+            builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddTransient<ISmtpClientWrapper, SmtpClientWrapper>();
+            builder.Services.AddTransient<IEmailRendererService, EmailRendererService>();
         }
     }
 }

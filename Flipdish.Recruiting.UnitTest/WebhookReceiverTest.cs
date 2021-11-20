@@ -1,11 +1,6 @@
-using Flipdish.Recruiting.WebhookReceiver;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using RestSharp;
-using System.Net;
 
 namespace Flipdish.Recruiting.UnitTest
 {

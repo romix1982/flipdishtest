@@ -1,42 +1,43 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.Logging;
-using DotLiquid;
-using System.Text;
+﻿using DotLiquid;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Globalization;
+using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using Flipdish.Recruiting.Core.Models;
-using Flipdish.Recruiting.WebhookReceiver.Helpers;
+using Flipdish.Recruiting.Core.Helpers;
+using System.Linq;
 using NetBarcode;
 
-namespace Flipdish.Recruiting.WebhookReceiver
+namespace Flipdish.Recruiting.Core.Services.EmailSender
 {
-    internal class EmailRenderer : IDisposable
+    public interface IEmailRendererService 
     {
-        private readonly Order _order;
-        private readonly string _appNameId;
-        private readonly string _appDirectory;
-        private readonly ILogger _log;
-        private readonly Currency _currency;
-        private readonly string _barcodeMetadataKey;
+        string RenderEmailOrder(Order order, string appNameId, string barcodeMetadataKey, string appDirectory, Currency currency);
+        public Dictionary<string, Stream> ImagesWithNames { get; }
+    }
+
+    public class EmailRendererService : IEmailRendererService, IDisposable
+    {
+        private Order _order;
+        private string _appNameId;
+        private string _appDirectory;
+        private Currency _currency;
+        private string _barcodeMetadataKey;
         private Dictionary<string, Stream> _imagesWithNames;
+      //  private ILogger _log;
         public Dictionary<string, Stream> ImagesWithNames => _imagesWithNames;
 
-        public EmailRenderer(Order order, string appNameId, string barcodeMetadataKey, string appDirectory, ILogger log, Currency currency)
+        public EmailRendererService()
         {
-            _order = order;
-            _appNameId = appNameId;
-            _barcodeMetadataKey = barcodeMetadataKey;
-            _appDirectory = appDirectory;
-            _log = log;
-            _currency = currency;
-            _imagesWithNames = new Dictionary<string, Stream>();
+
         }
 
-        public string RenderEmailOrder()
+        public string RenderEmailOrder(Order order, string appNameId, string barcodeMetadataKey, string appDirectory, Currency currency)
         {
+            SetFields(order, appNameId, barcodeMetadataKey, appDirectory, currency);
+
             var preorder_partial = _order.IsPreOrder == true ? GetPreorderPartial() : null;
             var order_status_partial = GetOrderStatusPartial();
             var order_items_partial = GetOrderItemsPartial();
@@ -215,6 +216,30 @@ namespace Flipdish.Recruiting.WebhookReceiver
             };
 
             return template.Render(paramaters);
+        }
+
+        public void Dispose()
+        {
+            if (_imagesWithNames == null)
+                return;
+
+            foreach (var kvp in _imagesWithNames)
+            {
+                kvp.Value.Dispose();
+            }
+
+            _imagesWithNames = null;
+        }
+
+        private void SetFields(Order order, string appNameId, string barcodeMetadataKey, string appDirectory, Currency currency)
+        {
+            _order = order;
+            _appNameId = appNameId;
+            _barcodeMetadataKey = barcodeMetadataKey;
+            _appDirectory = appDirectory;
+          //  _log = log;
+            _currency = currency;
+            _imagesWithNames = new Dictionary<string, Stream>();
         }
 
         private string GetPreorderPartial()
@@ -463,7 +488,7 @@ namespace Flipdish.Recruiting.WebhookReceiver
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, $"{barcodeNumbers} is not a valid barcode for order #{_order.OrderId}");
+               // _log.LogError(ex, $"{barcodeNumbers} is not a valid barcode for order #{_order.OrderId}");
                 return null;
             }
         }
@@ -494,19 +519,6 @@ namespace Flipdish.Recruiting.WebhookReceiver
             result.AppendLine("</tr>");
 
             return result.ToString();
-        }
-
-        public void Dispose()
-        {
-            if (_imagesWithNames == null)
-                return;
-
-            foreach(var kvp in _imagesWithNames)
-            {
-                kvp.Value.Dispose();
-            }
-
-            _imagesWithNames = null;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Flipdish.Recruiting.WebhookReceiver
 {
-    public class QueryEntity
+    public class QueryInfo
     {
         public string DevEnvironment { get; set; }
         public  IEnumerable<int> StoreIds { get; set; }
@@ -14,7 +14,7 @@ namespace Flipdish.Recruiting.WebhookReceiver
         public string MetadataKey { get; set; }
         public IEnumerable<string> EmailsTo { get; set; }
 
-        public QueryEntity(IQueryCollection query)
+        public QueryInfo(IQueryCollection query)
         {
             DevEnvironment = query["test"];
             StoreIds = GetStoreIdList(query["storeId"].ToArray());

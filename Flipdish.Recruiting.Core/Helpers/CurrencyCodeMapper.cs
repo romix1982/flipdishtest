@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Flipdish.Recruiting.WebhookReceiver.Helpers
+namespace Flipdish.Recruiting.Core.Helpers
 {
     public static class CurrencyCodeMapper
     {

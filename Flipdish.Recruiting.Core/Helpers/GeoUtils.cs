@@ -3,13 +3,12 @@ using System;
 using System.Globalization;
 using Flipdish.Recruiting.Core.Models;
 
-namespace Flipdish.Recruiting.WebhookReceiver.Helpers
+namespace Flipdish.Recruiting.Core.Helpers
 {
     public static class GeoUtils
     {
         public static string GetDynamicMapUrl(double centerLatitude, double centerLongitude, int zoom)
         {
-
             // latitude
             string direction;
             double absoluteValue;
