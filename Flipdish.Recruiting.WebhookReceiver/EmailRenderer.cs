@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Flipdish.Recruiting.WebhookReceiver.Models;
+using Flipdish.Recruiting.Core.Models;
 using Flipdish.Recruiting.WebhookReceiver.Helpers;
 using NetBarcode;
 

@@ -1,4 +1,4 @@
-﻿using Flipdish.Recruiting.WebhookReceiver.Models;
+﻿using Flipdish.Recruiting.Core.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;

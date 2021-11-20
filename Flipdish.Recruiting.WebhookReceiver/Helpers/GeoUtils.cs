@@ -1,7 +1,7 @@
 ﻿
-using Flipdish.Recruiting.WebhookReceiver.Models;
 using System;
 using System.Globalization;
+using Flipdish.Recruiting.Core.Models;
 
 namespace Flipdish.Recruiting.WebhookReceiver.Helpers
 {
