@@ -4,10 +4,16 @@
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
     <RootNamespace>Flipdish.Recruiting.WebhookReceiver</RootNamespace>
     <AssemblyName>Flipdish.Recruiting.WebhookReceiver</AssemblyName>
+	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DotLiquid" Version="2.0.366" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.7" />
+    <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.30" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="4.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.10" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.13" />
     <PackageReference Include="NetBarcode" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
@@ -42,5 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Flipdish.Recruiting.Core\Flipdish.Recruiting.Core.csproj" />
   </ItemGroup>
 </Project>

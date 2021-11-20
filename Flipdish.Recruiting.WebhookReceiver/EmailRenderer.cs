@@ -389,6 +389,7 @@ namespace Flipdish.Recruiting.WebhookReceiver
                         {
                             barcodeStream = GetBase64EAN13Barcode(item.MenuItemUI.Barcode);
                         }
+
                         if (barcodeStream != null)
                         {
                             if (!_imagesWithNames.ContainsKey(item.MenuItemUI.Barcode + ".png"))
@@ -407,34 +408,7 @@ namespace Flipdish.Recruiting.WebhookReceiver
 
                     foreach (var option in item.MenuItemUI.MenuOptions)
                     {
-                        itemsPart.AppendLine("<tr>");
-                        itemsPart.AppendLine($"<td cellpadding=\"2px\" valign=\"middle\" style=\"padding-left: 40px;padding-top: 10px; padding-bottom:10px\">+ {option.Name}</td>");
-                        itemsPart.AppendLine($"<td cellpadding=\"2px\" valign=\"middle\">{(option.Price * item.Count).ToRawHtmlCurrencyString(_currency)}</td>");
-
-                        if (!string.IsNullOrEmpty(option.Barcode))
-                        {
-                            Stream barcodeStream;
-
-                            if (_imagesWithNames.ContainsKey(option.Barcode + ".png"))
-                            {
-                                barcodeStream = _imagesWithNames[option.Barcode + ".png"];
-                            }
-                            else
-                            {
-                                barcodeStream = GetBase64EAN13Barcode(option.Barcode);
-                            }
-                            if (barcodeStream != null)
-                            {
-                                if (!_imagesWithNames.ContainsKey(option.Barcode + ".png"))
-                                {
-                                    _imagesWithNames.Add(option.Barcode + ".png", barcodeStream);
-                                }
-                                itemsPart.AppendLine($"<td cellpadding=\"2px\" valign=\"middle\"><img style=\"margin-left: 14px;margin-left: 9px;padding-top: 10px; padding-bottom:10px\" src=\"cid:{option.Barcode}.png\"/></td>");
-                            }
-                        }
-
-                        itemsPart.AppendLine("</tr>");
-
+                        CreateMenuOptions(itemsPart, item, option);
                     }
                 }
 
@@ -445,6 +419,37 @@ namespace Flipdish.Recruiting.WebhookReceiver
             }
 
             return itemsPart.ToString();
+        }
+
+        private void CreateMenuOptions(StringBuilder itemsPart, MenuItemsGrouped item, MenuOption option)
+        {
+            itemsPart.AppendLine("<tr>");
+            itemsPart.AppendLine($"<td cellpadding=\"2px\" valign=\"middle\" style=\"padding-left: 40px;padding-top: 10px; padding-bottom:10px\">+ {option.Name}</td>");
+            itemsPart.AppendLine($"<td cellpadding=\"2px\" valign=\"middle\">{(option.Price * item.Count).ToRawHtmlCurrencyString(_currency)}</td>");
+
+            if (!string.IsNullOrEmpty(option.Barcode))
+            {
+                Stream barcodeStream;
+
+                if (_imagesWithNames.ContainsKey(option.Barcode + ".png"))
+                {
+                    barcodeStream = _imagesWithNames[option.Barcode + ".png"];
+                }
+                else
+                {
+                    barcodeStream = GetBase64EAN13Barcode(option.Barcode);
+                }
+                if (barcodeStream != null)
+                {
+                    if (!_imagesWithNames.ContainsKey(option.Barcode + ".png"))
+                    {
+                        _imagesWithNames.Add(option.Barcode + ".png", barcodeStream);
+                    }
+                    itemsPart.AppendLine($"<td cellpadding=\"2px\" valign=\"middle\"><img style=\"margin-left: 14px;margin-left: 9px;padding-top: 10px; padding-bottom:10px\" src=\"cid:{option.Barcode}.png\"/></td>");
+                }
+            }
+
+            itemsPart.AppendLine("</tr>");
         }
 
         private Stream GetBase64EAN13Barcode(string barcodeNumbers)

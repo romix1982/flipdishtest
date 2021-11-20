@@ -10,13 +10,21 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Flipdish.Recruiting.WebhookReceiver.Models;
 using System.Collections.Generic;
+using Flipdish.Recruiting.Core.Services.EmailSender;
 
 namespace Flipdish.Recruiting.WebhookReceiver
 {
-    public static class WebhookReceiver
+    public class WebhookReceiver
     {
+        private readonly IEmailService _emailService;
+
+        public WebhookReceiver(IEmailService emailService)
+        {
+            _emailService = emailService;
+        }
+
         [FunctionName("WebhookReceiver")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
             ILogger log,
             ExecutionContext context)
@@ -27,8 +35,9 @@ namespace Flipdish.Recruiting.WebhookReceiver
                 log.LogInformation("C# HTTP trigger function processed a request.");
 
                 OrderCreatedWebhook orderCreatedWebhook;
+                var queryInfo = new QueryEntity(req.Query);
+                var test = queryInfo.DevEnvironment;
 
-                string test = req.Query["test"];
                 if(req.Method == "GET" && !string.IsNullOrEmpty(test))
                 {
 
@@ -39,56 +48,31 @@ namespace Flipdish.Recruiting.WebhookReceiver
                 }
                 else if (req.Method == "POST")
                 {
-                    string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                    var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                     orderCreatedWebhook = JsonConvert.DeserializeObject<OrderCreatedWebhook>(requestBody);
                 }
                 else
                 {
                     throw new Exception("No body found or test param.");
                 }
-                OrderCreatedEvent orderCreatedEvent = orderCreatedWebhook.Body;
+                var orderCreatedEvent = orderCreatedWebhook.Body;
 
                 orderId = orderCreatedEvent.Order.OrderId;
-                List<int> storeIds = new List<int>();
-                string[] storeIdParams = req.Query["storeId"].ToArray();
-                if (storeIdParams.Length > 0)
-                {
-                    foreach (var storeIdString in storeIdParams)
-                    {
-                        int storeId = 0;
-                        try 
-                        {
-                            storeId = int.Parse(storeIdString);
-                        }
-                        catch(Exception) {}
-                        
-                        storeIds.Add(storeId);
-                    }
 
-                    if (!storeIds.Contains(orderCreatedEvent.Order.Store.Id.Value))
-                    {
-                        log.LogInformation($"Skipping order #{orderId}");
-                        return new ContentResult { Content = $"Skipping order #{orderId}", ContentType = "text/html" };
-                    }
+                if (!queryInfo.StoreIds.Contains(orderCreatedEvent.Order.Store.Id.Value))
+                {
+                    log.LogInformation($"Skipping order #{orderId}");
+                    return new ContentResult { Content = $"Skipping order #{orderId}", ContentType = "text/html" };
                 }
 
-
-                Currency currency = Currency.EUR;
-                var currencyString = req.Query["currency"].FirstOrDefault();
-                if(!string.IsNullOrEmpty(currencyString) && Enum.TryParse(typeof(Currency), currencyString.ToUpper(), out object currencyObject))
-                {
-                    currency = (Currency)currencyObject;
-                }
-
-                var barcodeMetadataKey = req.Query["metadataKey"].First() ?? "eancode";
-
-                using EmailRenderer emailRenderer = new EmailRenderer(orderCreatedEvent.Order, orderCreatedEvent.AppId, barcodeMetadataKey, context.FunctionAppDirectory, log, currency);
+                using EmailRenderer emailRenderer = new EmailRenderer(orderCreatedEvent.Order, orderCreatedEvent.AppId, queryInfo.MetadataKey, 
+                    context.FunctionAppDirectory, log, queryInfo.Currency);
                 
                 var emailOrder = emailRenderer.RenderEmailOrder();
 
                 try
                 {
-                    EmailService.Send("", req.Query["to"], $"New Order #{orderId}", emailOrder, emailRenderer.ImagesWithNames);
+                    await _emailService.SendAsync("", queryInfo.EmailsTo, $"New Order #{orderId}", emailOrder, emailRenderer.ImagesWithNames);
                 }
                 catch(Exception ex)
                 {
