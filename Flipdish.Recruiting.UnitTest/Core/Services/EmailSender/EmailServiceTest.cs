@@ -1,4 +1,5 @@
 ﻿using Flipdish.Recruiting.Core.Services.EmailSender;
+using Moq;
 using NUnit.Framework;
 
 namespace Flipdish.Recruiting.UnitTest.Core.Services.EmailSender
@@ -6,12 +7,14 @@ namespace Flipdish.Recruiting.UnitTest.Core.Services.EmailSender
     [TestFixture]
     public class EmailServiceTest
     {
-        private readonly EmailService _emailService;
+        private Mock<ISmtpClientWrapper> _smtpClientWrapper;
+        private EmailService _emailService;
 
         [SetUp]
         public void SetUp()
         {
-           // _emailService = new EmailService();
+            _smtpClientWrapper = new Mock<ISmtpClientWrapper>();
+           _emailService = new EmailService(_smtpClientWrapper.Object);
         }
 
         [Test]

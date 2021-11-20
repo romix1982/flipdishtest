@@ -14,13 +14,14 @@ namespace Flipdish.Recruiting.WebhookReceiver
         public string MetadataKey { get; set; }
         public IEnumerable<string> EmailsTo { get; set; }
 
+
         public QueryInfo(IQueryCollection query)
         {
             DevEnvironment = query["test"];
             StoreIds = GetStoreIdList(query["storeId"].ToArray());
             Currency = SetCurrency(query["currency"]);
-            MetadataKey = query["metadataKey"].First() ?? "eancode";
-            EmailsTo = query["to"].ToArray();
+            MetadataKey = SetMetadataKey(query["metadataKey"]);
+            EmailsTo = GetEmailsTo(query["to"].ToArray());
         }
 
         private Currency SetCurrency(string currencyString)
@@ -48,5 +49,9 @@ namespace Flipdish.Recruiting.WebhookReceiver
             }
             return storeIds;
         }
+
+        private IEnumerable<string> GetEmailsTo(IEnumerable<string> queryTo) => queryTo.Any() ? queryTo : throw new ArgumentNullException("Parameter TO is missing in the request URL");
+
+        private string SetMetadataKey(string metadataKey) => !string.IsNullOrEmpty(metadataKey) ? metadataKey : "eancode";
     }
 }
