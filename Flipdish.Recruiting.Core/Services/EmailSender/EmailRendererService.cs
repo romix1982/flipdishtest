@@ -23,14 +23,13 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
         private Order _order;
         private string _appNameId;
         private string _appDirectory;
-        private Currency _currency;
         private string _barcodeMetadataKey;
+        private Currency _currency;
         private Dictionary<string, Stream> _imagesWithNames;
 
         public Dictionary<string, Stream> ImagesWithNames => _imagesWithNames;
 
-        public EmailRendererService()
-        {}
+        public EmailRendererService(){}
 
         public string RenderEmailOrder(Order order, string appNameId, string barcodeMetadataKey, string appDirectory, Currency currency)
         {

@@ -8,20 +8,26 @@ namespace Flipdish.Recruiting.WebhookReceiver
 {
     public class QueryInfo
     {
-        public string DevEnvironment { get; set; }
-        public  IEnumerable<int> StoreIds { get; set; }
-        public Currency  Currency { get; set; }
-        public string MetadataKey { get; set; }
-        public IEnumerable<string> EmailsTo { get; set; }
+        private readonly string _devEnvironment;
+        private readonly string _metadaKey;
+        private readonly IEnumerable<int> _storeIds;
+        private readonly Currency _currency;
+        private readonly IEnumerable<string> _emailsTo;
+
+        public string DevEnvironment => _devEnvironment;
+        public IEnumerable<int> StoreIds => _storeIds;
+        public Currency Currency => _currency;
+        public string MetadataKey => _metadaKey;
+        public IEnumerable<string> EmailsTo => _emailsTo;
 
 
         public QueryInfo(IQueryCollection query)
         {
-            DevEnvironment = query["test"];
-            StoreIds = GetStoreIdList(query["storeId"].ToArray());
-            Currency = SetCurrency(query["currency"]);
-            MetadataKey = SetMetadataKey(query["metadataKey"]);
-            EmailsTo = GetEmailsTo(query["to"].ToArray());
+            _devEnvironment = query["test"];
+            _storeIds = GetStoreIdList(query["storeId"].ToArray());
+            _currency = SetCurrency(query["currency"]);
+            _metadaKey = SetMetadataKey(query["metadataKey"]);
+            _emailsTo = GetEmailsTo(query["to"].ToArray());
         }
 
         private Currency SetCurrency(string currencyString)

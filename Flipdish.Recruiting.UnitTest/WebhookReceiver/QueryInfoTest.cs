@@ -15,16 +15,14 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         private Mock<IQueryCollection> _queryCollection;
 
         [SetUp]
-        public void SepUp()
-        {
-            _queryCollection = new Mock<IQueryCollection>();
-        }
+        public void SepUp() => _queryCollection = new Mock<IQueryCollection>();
 
         [Test]
         public void DevEnvironment_should_be_not_null_if_query_collection_contain_param_test()
         {
             //Arrange
             _queryCollection.Setup(x => x["test"]).Returns("Test environment");
+            _queryCollection.Setup(x => x["to"]).Returns(new StringValues(new string[] { "john.doe@mail.com", "jane.doe@mail.com" }));
 
             //Act
             var queryInfo = new QueryInfo(_queryCollection.Object);
@@ -38,6 +36,8 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         public void DevEnvironment_should_be_null_if_query_collection_not_contain_param_test()
         {
             //Arrange
+            _queryCollection.Setup(x => x["to"]).Returns(new StringValues(new string[] { "john.doe@mail.com", "jane.doe@mail.com" }));
+
             //Act
             var queryInfo = new QueryInfo(_queryCollection.Object);
 
@@ -50,6 +50,7 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         {
             //Arrange
             _queryCollection.Setup(x => x["test"]).Returns("");
+            _queryCollection.Setup(x => x["to"]).Returns(new StringValues(new string[] { "john.doe@mail.com", "jane.doe@mail.com" }));
 
             //Act
             var queryInfo = new QueryInfo(_queryCollection.Object);
@@ -63,6 +64,7 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         {
             //Arrange
             _queryCollection.Setup(x => x["storeId"]).Returns(new StringValues(new string[] { "123", "hi" }));
+            _queryCollection.Setup(x => x["to"]).Returns(new StringValues(new string[] { "john.doe@mail.com", "jane.doe@mail.com" }));
 
             //Act
             var queryInfo = new QueryInfo(_queryCollection.Object);
@@ -77,6 +79,8 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         public void StoreIds_should_not_contain_values()
         {
             //Arrange
+            _queryCollection.Setup(x => x["to"]).Returns(new StringValues(new string[] { "john.doe@mail.com", "jane.doe@mail.com" }));
+
             //Act
             var queryInfo = new QueryInfo(_queryCollection.Object);
 
@@ -90,6 +94,7 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         {
             //Arrange
             _queryCollection.Setup(x => x["currency"]).Returns("Dollar");
+            _queryCollection.Setup(x => x["to"]).Returns(new StringValues(new string[] { "john.doe@mail.com", "jane.doe@mail.com" }));
 
             //Act
             var queryInfo = new QueryInfo(_queryCollection.Object);
@@ -108,6 +113,7 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         {
             //Arrange
             _queryCollection.Setup(x => x["currency"]).Returns(currency.ToString());
+            _queryCollection.Setup(x => x["to"]).Returns(new StringValues(new string[] { "john.doe@mail.com", "jane.doe@mail.com" }));
 
             //Act
             var queryInfo = new QueryInfo(_queryCollection.Object);
@@ -120,6 +126,8 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         public void MetadataKey_should_be_eancode_if_value_is_empty()
         {
             //Arrange
+            _queryCollection.Setup(x => x["to"]).Returns(new StringValues(new string[] { "john.doe@mail.com", "jane.doe@mail.com" }));
+
             //Act
             var queryInfo = new QueryInfo(_queryCollection.Object);
 
@@ -134,6 +142,8 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         {
             //Arrange
             _queryCollection.Setup(x => x["metadataKey"]).Returns(metadata);
+            _queryCollection.Setup(x => x["to"]).Returns(new StringValues(new string[] { "john.doe@mail.com", "jane.doe@mail.com" }));
+
             //Act
             var queryInfo = new QueryInfo(_queryCollection.Object);
 

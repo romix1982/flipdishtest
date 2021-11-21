@@ -13,7 +13,13 @@ using Flipdish.Recruiting.Core.Services.EmailSender;
 
 namespace Flipdish.Recruiting.WebhookReceiver
 {
-    public class WebhookReceiver
+    public interface IWebhookReceiver
+    {
+        Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log, ExecutionContext context);
+    }
+
+    public class WebhookReceiver : IWebhookReceiver
     {
         private readonly IEmailService _emailService;
         private readonly IEmailRendererService _emailRendererService;
@@ -38,7 +44,7 @@ namespace Flipdish.Recruiting.WebhookReceiver
                 {
                     "GET" => GetAction(context, queryInfo, orderCreatedWebhook),
                     "POST" => await PostActionAsync(req),
-                    _ => throw new Exception("No body found or test param."),
+                    _ => NoBodyOrTestParameterError(log),
                 };
 
                 return await ProcessOrder(orderCreatedWebhook.Body, queryInfo, context, log);
@@ -119,6 +125,13 @@ namespace Flipdish.Recruiting.WebhookReceiver
         {
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             return JsonConvert.DeserializeObject<OrderCreatedWebhook>(requestBody);
+        }
+
+        private OrderCreatedWebhook NoBodyOrTestParameterError(ILogger log)
+        {
+            var errorMessage = "No body found or test param.";
+            log.LogInformation(errorMessage);
+            throw new ArgumentNullException(errorMessage);
         }
 
         private bool IsDevEnvironment(string testParam) => !string.IsNullOrEmpty(testParam);
