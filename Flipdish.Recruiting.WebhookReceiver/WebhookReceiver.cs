@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Flipdish.Recruiting.Core.Models;
 using Flipdish.Recruiting.Core.Services.EmailSender;
+using static System.Net.Mime.MediaTypeNames;
+using System.Drawing;
 
 namespace Flipdish.Recruiting.WebhookReceiver
 {
@@ -23,6 +25,7 @@ namespace Flipdish.Recruiting.WebhookReceiver
     {
         private readonly IEmailService _emailService;
         private readonly IEmailRendererService _emailRendererService;
+        private ILogger _logger;
 
         public WebhookReceiver(IEmailService emailService, IEmailRendererService emailRendererService)
         {
@@ -34,20 +37,20 @@ namespace Flipdish.Recruiting.WebhookReceiver
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log, ExecutionContext context)
         {
+            _logger = log;
             try
             {
                 log.LogInformation("C# HTTP trigger function processed a request.");
                 var queryInfo = new QueryInfo(req.Query);
 
-                var orderCreatedWebhook = new OrderCreatedWebhook();
-                orderCreatedWebhook = req.Method switch
+                var orderCreatedWebhook = req.Method switch
                 {
-                    "GET" => GetAction(context, queryInfo, orderCreatedWebhook),
+                    "GET" => GetAction(context, queryInfo),
                     "POST" => await PostActionAsync(req),
-                    _ => NoBodyOrTestParameterError(log),
+                    _ => UnknownMethodError()
                 };
 
-                return await ProcessOrder(orderCreatedWebhook.Body, queryInfo, context, log);
+                return await ProcessOrder(orderCreatedWebhook.Body, queryInfo, context);
             }
             catch (Exception ex)
             {
@@ -56,32 +59,32 @@ namespace Flipdish.Recruiting.WebhookReceiver
         }
 
         #region Private Methods
-        private async Task<ContentResult> ProcessOrder(OrderCreatedEvent orderCreatedEvent, QueryInfo queryInfo, ExecutionContext context, ILogger log)
+        private async Task<ContentResult> ProcessOrder(OrderCreatedEvent orderCreatedEvent, QueryInfo queryInfo, ExecutionContext context)
         {
             var orderId = orderCreatedEvent.Order.OrderId;
             try
             {
                 if (!MatchStoreIdAndOrderStoreId(queryInfo, orderCreatedEvent))
                 {
-                    log.LogInformation($"Skipping order #{orderId}");
+                    _logger.LogInformation($"Skipping order #{orderId}");
                     return new ContentResult { Content = $"Skipping order #{orderId}", ContentType = "text/html" };
                 }
 
-                var emailOrder = CreateEmailOrder(log, context, orderId, queryInfo, orderCreatedEvent);
-                await SendEmailOrder(log, orderId, queryInfo, emailOrder);
+                var emailOrder = CreateEmailOrder(context, orderId, queryInfo, orderCreatedEvent);
+                await SendEmailOrder(orderId, queryInfo, emailOrder);
 
-                log.LogInformation($"Email sent for order #{orderId}.", new { orderCreatedEvent.Order.OrderId });
+                _logger.LogInformation($"Email sent for order #{orderId}.", new { orderCreatedEvent.Order.OrderId });
 
-                return new ContentResult { Content = emailOrder, ContentType = "text/html" };
+                return new ContentResult { Content = emailOrder, ContentType = "text/html",};
             }
             catch (Exception ex)
             {
-                log.LogError(ex, $"Error occured during processing order #{orderId}");
+                _logger.LogError(ex, $"Error occured during processing order #{orderId}");
                 throw;
             }
         }
 
-        private async Task SendEmailOrder(ILogger log, int? orderId, QueryInfo queryInfo, string emailOrder)
+        private async Task SendEmailOrder(int? orderId, QueryInfo queryInfo, string emailOrder)
         {
             try
             {
@@ -89,12 +92,12 @@ namespace Flipdish.Recruiting.WebhookReceiver
             }
             catch (Exception ex)
             {
-                log.LogError($"Error occured during sending email for order #{orderId}" + ex);
+                _logger.LogError($"Error occured during sending email for order #{orderId}" + ex);
                 throw;
             }
         }
 
-        private string CreateEmailOrder(ILogger log, ExecutionContext context, int? orderId, QueryInfo queryInfo, OrderCreatedEvent orderCreatedEvent)
+        private string CreateEmailOrder(ExecutionContext context, int? orderId, QueryInfo queryInfo, OrderCreatedEvent orderCreatedEvent)
         {
             try
             {
@@ -103,34 +106,47 @@ namespace Flipdish.Recruiting.WebhookReceiver
             }
             catch (Exception ex)
             {
-                log.LogError($"Error occured during email redering for order #{orderId}" + ex);
+                _logger.LogError($"Error occured during email redering for order #{orderId}" + ex);
                 throw;
             }
         }
 
-        private OrderCreatedWebhook GetAction(ExecutionContext context, QueryInfo queryInfo, OrderCreatedWebhook orderCreatedWebhook)
+        private OrderCreatedWebhook GetAction(ExecutionContext context, QueryInfo queryInfo)
         {
             if (IsDevEnvironment(queryInfo.DevEnvironment))
             {
                 var templateFilePath = Path.Combine(context.FunctionAppDirectory, "TestWebhooks", queryInfo.DevEnvironment);
                 var testWebhookJson = new StreamReader(templateFilePath).ReadToEnd();
 
-                orderCreatedWebhook = JsonConvert.DeserializeObject<OrderCreatedWebhook>(testWebhookJson);
+                return JsonConvert.DeserializeObject<OrderCreatedWebhook>(testWebhookJson);
             }
-
-            return orderCreatedWebhook;
+            else
+            {
+                var errorMessage = "No test param found.";
+               _logger.LogError(errorMessage);
+                throw new ArgumentNullException(errorMessage);
+            }
         }
 
         private async Task<OrderCreatedWebhook> PostActionAsync(HttpRequest req)
         {
-            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            return JsonConvert.DeserializeObject<OrderCreatedWebhook>(requestBody);
+            try
+            {
+                var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                return JsonConvert.DeserializeObject<OrderCreatedWebhook>(requestBody);
+            }
+            catch (Exception ex )
+            {
+                var errorMessage = "No body found.";
+               _logger.LogError(errorMessage);
+                throw new ArgumentNullException(errorMessage, ex);
+            }
         }
 
-        private OrderCreatedWebhook NoBodyOrTestParameterError(ILogger log)
+        private OrderCreatedWebhook UnknownMethodError()
         {
-            var errorMessage = "No body found or test param.";
-            log.LogInformation(errorMessage);
+            var errorMessage = "Unknown request methdod.";
+            _logger.LogInformation(errorMessage);
             throw new ArgumentNullException(errorMessage);
         }
 
