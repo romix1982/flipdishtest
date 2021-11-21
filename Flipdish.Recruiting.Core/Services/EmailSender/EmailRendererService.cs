@@ -9,6 +9,7 @@ using Flipdish.Recruiting.Core.Models;
 using Flipdish.Recruiting.Core.Helpers;
 using System.Linq;
 using NetBarcode;
+using Flipdish.Recruiting.UnitTest.Core.Services;
 
 namespace Flipdish.Recruiting.Core.Services.EmailSender
 {
@@ -26,10 +27,14 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
         private string _barcodeMetadataKey;
         private Currency _currency;
         private Dictionary<string, Stream> _imagesWithNames;
+        private readonly IGeoService _geoService;
 
         public Dictionary<string, Stream> ImagesWithNames => _imagesWithNames;
 
-        public EmailRendererService(){}
+        public EmailRendererService(IGeoService geoService) 
+        {
+            _geoService = geoService;
+        }
 
         public string RenderEmailOrder(Order order, string appNameId, string barcodeMetadataKey, string appDirectory, Currency currency)
         {
@@ -69,10 +74,10 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
                     _order.DeliveryLocation.Coordinates != null)
                 {
                     mapUrl =
-                        GeoUtils.GetDynamicMapUrl(
+                        _geoService.GetDynamicMapUrl(
                             _order.DeliveryLocation.Coordinates.Latitude.Value,
                             _order.DeliveryLocation.Coordinates.Longitude.Value, 18);
-                    staticMapUrl = GeoUtils.GetStaticMapUrl(
+                    staticMapUrl = _geoService.GetStaticMapUrl(
                         _order.DeliveryLocation.Coordinates.Latitude.Value,
                         _order.DeliveryLocation.Coordinates.Longitude.Value,
                         18,
@@ -85,7 +90,7 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
                     var storeCoordinates = new Coordinates(
                         _order.Store.Coordinates.Latitude.Value,
                         _order.Store.Coordinates.Longitude.Value);
-                    airDistance = GeoUtils.GetAirDistance(deliveryLocation, storeCoordinates);
+                    airDistance = _geoService.GetAirDistance(deliveryLocation, storeCoordinates);
                 }
                 else if (_order.DeliveryType == Order.DeliveryTypeEnum.Pickup &&
                          _order.CustomerLocation != null)
@@ -97,7 +102,7 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
                     var storeCoordinates = new Coordinates(
                         _order.Store.Coordinates.Latitude.Value,
                         _order.Store.Coordinates.Longitude.Value);
-                    airDistance = GeoUtils.GetAirDistance(userLocation, storeCoordinates);
+                    airDistance = _geoService.GetAirDistance(userLocation, storeCoordinates);
                 }
             }
 

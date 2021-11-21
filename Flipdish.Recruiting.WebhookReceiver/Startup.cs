@@ -1,4 +1,5 @@
 ﻿using Flipdish.Recruiting.Core.Services.EmailSender;
+using Flipdish.Recruiting.UnitTest.Core.Services;
 using Flipdish.Recruiting.WebhookReceiver;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ namespace Flipdish.Recruiting.WebhookReceiver
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddTransient<ISmtpClientWrapper, SmtpClientWrapper>();
             builder.Services.AddTransient<IEmailRendererService, EmailRendererService>();
+            builder.Services.AddTransient<IGeoService, GeoService>();
         }
     }
 }

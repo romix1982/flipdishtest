@@ -1,13 +1,44 @@
-﻿
+﻿using Flipdish.Recruiting.Core.Helpers;
+using Flipdish.Recruiting.Core.Models;
 using System;
 using System.Globalization;
-using Flipdish.Recruiting.Core.Models;
 
-namespace Flipdish.Recruiting.Core.Helpers
+namespace Flipdish.Recruiting.Core.Services
 {
-    public static class GeoUtils
+    public interface IGeoService
     {
-        public static string GetDynamicMapUrl(double centerLatitude, double centerLongitude, int zoom)
+        string GetDynamicMapUrl(double centerLatitude, double centerLongitude, int zoom);
+        string GetStaticMapUrl(double centerLatitude, double centerLongitude, int zoom, double? markerLatitude, double? markerLongitude, int width = 1200, int height = 1200);
+        double GetAirDistance(Coordinates aCoords, Coordinates bCoords);
+    }
+
+    public class GeoService : IGeoService
+    {
+        public double GetAirDistance(Coordinates aCoords, Coordinates bCoords)
+        {
+            var lat1 = aCoords.Latitude.Value;
+            var lat2 = bCoords.Latitude.Value;
+            var lon1 = aCoords.Longitude.Value;
+            var lon2 = bCoords.Longitude.Value;
+            if ((lat1 == lat2) && (lon1 == lon2))
+            {
+                return 0;
+            }
+            else
+            {
+                var theta = lon1 - lon2;
+                var dist = Math.Sin(ConvertDegToRad(lat1)) * Math.Sin(ConvertDegToRad(lat2)) + Math.Cos(ConvertDegToRad(lat1)) * Math.Cos(ConvertDegToRad(lat2)) * Math.Cos(ConvertDegToRad(theta));
+                dist = Math.Acos(dist);
+                dist = ConvertRadToDeg(dist);
+                dist = dist * 60 * 1.1515;
+
+                dist *= 1.609344;
+
+                return (dist);
+            }
+        }
+
+        public string GetDynamicMapUrl(double centerLatitude, double centerLongitude, int zoom)
         {
             string direction;
             double absoluteValue;
@@ -40,24 +71,8 @@ namespace Flipdish.Recruiting.Core.Helpers
             var url = string.Format("https://www.google.ie/maps/place/{0}+{1}/@{2},{3},{4}z", dmsLatitude, dmsLongitude, centerLatitude, centerLongitude, zoom);
             return url;
         }
-        private static string GetDms(double value)
-        {
-            var decimalDegrees = (double)value;
-            var degrees = Math.Floor(decimalDegrees);
-            var minutes = (decimalDegrees - Math.Floor(decimalDegrees)) * 60.0;
-            var seconds = (minutes - Math.Floor(minutes)) * 60.0;
-            var tenths = (seconds - Math.Floor(seconds)) * 1000.0;
-            // get rid of fractional part
-            minutes = Math.Floor(minutes);
-            seconds = Math.Floor(seconds);
-            tenths = Math.Floor(tenths);
 
-            var result = string.Format("{0}°{1}'{2}.{3}\"", degrees, minutes, seconds, tenths);
-
-            return result;
-        }
-
-        public static string GetStaticMapUrl(double centerLatitude, double centerLongitude, int zoom, double? markerLatitude,  double? markerLongitude, int width = 1200, int height = 1200)
+        public string GetStaticMapUrl(double centerLatitude, double centerLongitude, int zoom, double? markerLatitude, double? markerLongitude, int width = 1200, int height = 1200)
         {
 
             var googleStaticMapsApiKey = SettingsService.Google_StaticMapsApiKey;
@@ -76,28 +91,20 @@ namespace Flipdish.Recruiting.Core.Helpers
             return mapFullUri;
         }
 
-        public static double GetAirDistance(Coordinates aCoords, Coordinates bCoords)
+        private static string GetDms(double value)
         {
-            var lat1 = aCoords.Latitude.Value;
-            var lat2 = bCoords.Latitude.Value;
-            var lon1 = aCoords.Longitude.Value;
-            var lon2 = bCoords.Longitude.Value;
-            if ((lat1 == lat2) && (lon1 == lon2))
-            {
-                return 0;
-            }
-            else
-            {
-                var theta = lon1 - lon2;
-                var dist = Math.Sin(ConvertDegToRad(lat1)) * Math.Sin(ConvertDegToRad(lat2)) + Math.Cos(ConvertDegToRad(lat1)) * Math.Cos(ConvertDegToRad(lat2)) * Math.Cos(ConvertDegToRad(theta));
-                dist = Math.Acos(dist);
-                dist = ConvertRadToDeg(dist);
-                dist = dist * 60 * 1.1515;
+            var decimalDegrees = (double)value;
+            var degrees = Math.Floor(decimalDegrees);
+            var minutes = (decimalDegrees - Math.Floor(decimalDegrees)) * 60.0;
+            var seconds = (minutes - Math.Floor(minutes)) * 60.0;
+            var tenths = (seconds - Math.Floor(seconds)) * 1000.0;
+            minutes = Math.Floor(minutes);
+            seconds = Math.Floor(seconds);
+            tenths = Math.Floor(tenths);
 
-                dist *= 1.609344;
+            var result = string.Format("{0}°{1}'{2}.{3}\"", degrees, minutes, seconds, tenths);
 
-                return (dist);
-            }
+            return result;
         }
 
         private static double ConvertDegToRad(double deg) => (deg * Math.PI / 180.0);
