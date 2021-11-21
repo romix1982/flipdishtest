@@ -19,7 +19,7 @@ namespace Flipdish.Recruiting.UnitTest.Utils
         {
             var assembly = Assembly.GetExecutingAssembly();
 
-            using Stream stream = assembly.GetManifestResourceStream(resourceName);
+            using var stream = assembly.GetManifestResourceStream(resourceName);
             var bytes = new byte[stream.Length];
             stream.Read(bytes, 0, (int)stream.Length);
 

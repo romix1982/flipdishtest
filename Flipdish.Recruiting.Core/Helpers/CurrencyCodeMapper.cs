@@ -9,17 +9,6 @@ namespace Flipdish.Recruiting.Core.Helpers
     {
         private static readonly Dictionary<string, string> _symbolsByCode;
 
-        //public static Dictionary<string, string> IsoCountryCodesAndSymbols
-        //{
-        //    get
-        //    {
-        //        var newDictionary = _symbolsByCode.ToDictionary(entry => entry.Key,entry => entry.Value);
-
-        //        return newDictionary;
-        //    }
-        //}
-
-
         public static string IsoCodeToSymbol(string isoCode) => _symbolsByCode[isoCode];
 
         static CurrencyCodeMapper()

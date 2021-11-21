@@ -10,8 +10,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Flipdish.Recruiting.Core.Models;
 using Flipdish.Recruiting.Core.Services.EmailSender;
-using static System.Net.Mime.MediaTypeNames;
-using System.Drawing;
 
 namespace Flipdish.Recruiting.WebhookReceiver
 {

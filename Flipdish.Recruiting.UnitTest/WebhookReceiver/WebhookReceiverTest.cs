@@ -3,7 +3,6 @@ using Flipdish.Recruiting.Core.Services.EmailSender;
 using Flipdish.Recruiting.UnitTest.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;

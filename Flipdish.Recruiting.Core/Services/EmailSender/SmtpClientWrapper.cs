@@ -18,3 +18,10 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
         public async Task Send(MailMessage mailMessage) => await Task.Delay(2);
     }
 }
+
+//var smtpClient = new SmtpClient("smtp.gmail.com")
+//{
+//    Port = 587,
+//    Credentials = new NetworkCredential("email", "password"),
+//    EnableSsl = true,
+//};
