@@ -10,6 +10,8 @@ using Flipdish.Recruiting.Core.Helpers;
 using System.Linq;
 using NetBarcode;
 using Flipdish.Recruiting.UnitTest.Core.Services;
+using Flipdish.Recruiting.Core.Helpers.CurrencyUtils;
+using Microsoft.Extensions.Options;
 
 namespace Flipdish.Recruiting.Core.Services.EmailSender
 {
@@ -28,12 +30,14 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
         private Currency _currency;
         private Dictionary<string, Stream> _imagesWithNames;
         private readonly IGeoService _geoService;
+        private readonly SettingsService _settingsService;
 
         public Dictionary<string, Stream> ImagesWithNames => _imagesWithNames;
 
-        public EmailRendererService(IGeoService geoService) 
+        public EmailRendererService(IGeoService geoService, IOptions<SettingsService> setting) 
         {
             _geoService = geoService;
+            _settingsService = setting.Value;
         }
 
         public string RenderEmailOrder(Order order, string appNameId, string barcodeMetadataKey, string appDirectory, Currency currency)
@@ -48,12 +52,12 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
             var templateStr = GetLiquidFileAsString("RestaurantOrderDetail.liquid");
             Template template = Template.Parse(templateStr);
 
-            var domain = SettingsService.Flipdish_DomainWithScheme;
+            var domain = _settingsService.FlipdishDomainWithScheme;
             var orderId = _order.OrderId.Value;
             var mapUrl = string.Empty;
             var staticMapUrl = string.Empty;
             double? airDistance = null;
-            var supportNumber = SettingsService.RestaurantSupportNumber;
+            var supportNumber = _settingsService.RestaurantSupportNumber;
             var physicalRestaurantName = _order.Store.Name;
             var paymentAccountDescription = _order.PaymentAccountDescription;
             var deliveryTypeNum = (int)_order.DeliveryType;
@@ -276,7 +280,7 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
         private string GetOrderStatusPartial()
         {
             var orderId = _order.OrderId.Value;
-            var webLink = string.Format(SettingsService.EmailServiceOrderUrl, _appNameId, orderId);
+            var webLink = string.Format(_settingsService.EmailServiceOrderUrl, _appNameId, orderId);
 
             var resOrder = "Order";
             var resView_Order = "View Order";
@@ -348,7 +352,7 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
             var templateStr = GetLiquidFileAsString("CustomerDetailsPartial.liquid");
             Template template = Template.Parse(templateStr);
 
-            var domain = SettingsService.Flipdish_DomainWithScheme;
+            var domain = _settingsService.FlipdishDomainWithScheme;
             var customerName = _order.Customer.Name;
             var deliveryInstructions = _order?.DeliveryLocation?.DeliveryInstructions;
             var deliveryLocationAddressString = _order?.DeliveryLocation?.PrettyAddressString;

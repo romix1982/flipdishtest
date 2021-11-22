@@ -1,5 +1,6 @@
 ﻿using Flipdish.Recruiting.Core.Helpers;
 using Flipdish.Recruiting.Core.Models;
+using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
 
@@ -14,6 +15,13 @@ namespace Flipdish.Recruiting.UnitTest.Core.Services
 
     public class GeoService : IGeoService
     {
+        private readonly SettingsService _settingsService;
+
+        public GeoService(IOptions<SettingsService> settings)
+        {
+            _settingsService = settings.Value;
+        }
+
         public double GetAirDistance(Coordinates aCoords, Coordinates bCoords)
         {
             var lat1 = aCoords.Latitude.Value;
@@ -75,7 +83,7 @@ namespace Flipdish.Recruiting.UnitTest.Core.Services
         public string GetStaticMapUrl(double centerLatitude, double centerLongitude, int zoom, double? markerLatitude, double? markerLongitude, int width = 1200, int height = 1200)
         {
 
-            var googleStaticMapsApiKey = SettingsService.Google_StaticMapsApiKey;
+            var googleStaticMapsApiKey = _settingsService.GoogleStaticMapsApiKey;
 
             var keyString = string.IsNullOrWhiteSpace(googleStaticMapsApiKey) ? "" : "&key=" + googleStaticMapsApiKey;
             var markerLatitudeStr = markerLatitude.HasValue ? markerLatitude.Value.ToString(CultureInfo.InvariantCulture) : "0";

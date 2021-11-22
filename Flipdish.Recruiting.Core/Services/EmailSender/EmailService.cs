@@ -25,7 +25,7 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
             var mailMessage = new MailMessage
             {
                 IsBodyHtml = true,
-                From = new MailAddress("romix1982@gmail.com"),
+                From = new MailAddress(from),
                 Subject = subject,
                 Body = body
             };

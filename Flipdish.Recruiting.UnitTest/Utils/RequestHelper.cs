@@ -10,17 +10,6 @@ namespace Flipdish.Recruiting.UnitTest.Utils
 {
     public class RequestHelper
     {
-        public static IEnumerable<object[]> Data()
-        {
-            return new List<object[]>
-            {
-                new object[] { "to", "john.doe@mail.com" },
-                new object[] { "currency", "eur" },
-                new object[] { "metadatakey", "eancode" },
-                new object[] { "storeId", "1234" }
-            };
-        }
-
         private static Dictionary<string, StringValues> CreateDictionary()
         {
             var query = new Dictionary<string, StringValues>

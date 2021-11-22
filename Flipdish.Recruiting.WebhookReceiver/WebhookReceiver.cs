@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Flipdish.Recruiting.Core.Models;
 using Flipdish.Recruiting.Core.Services.EmailSender;
+using Microsoft.Extensions.Options;
 
 namespace Flipdish.Recruiting.WebhookReceiver
 {
@@ -23,10 +24,12 @@ namespace Flipdish.Recruiting.WebhookReceiver
     {
         private readonly IEmailService _emailService;
         private readonly IEmailRendererService _emailRendererService;
+        private SmtpConfig _stmpConfig;
         private ILogger _logger;
 
-        public WebhookReceiver(IEmailService emailService, IEmailRendererService emailRendererService)
+        public WebhookReceiver(IEmailService emailService, IEmailRendererService emailRendererService, IOptions<SmtpConfig> stmpConfig)
         {
+            _stmpConfig = stmpConfig.Value;
             _emailService = emailService;
             _emailRendererService = emailRendererService;
         }
@@ -86,7 +89,7 @@ namespace Flipdish.Recruiting.WebhookReceiver
         {
             try
             {
-                await _emailService.SendAsync("", queryInfo.EmailsTo, $"New Order #{orderId}", emailOrder, _emailRendererService.ImagesWithNames);
+                await _emailService.SendAsync(_stmpConfig.From, queryInfo.EmailsTo, $"New Order #{orderId}", emailOrder, _emailRendererService.ImagesWithNames);
             }
             catch (Exception ex)
             {

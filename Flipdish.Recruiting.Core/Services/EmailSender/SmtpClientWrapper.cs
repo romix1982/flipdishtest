@@ -1,4 +1,7 @@
-﻿using System.Net.Mail;
+﻿using Microsoft.Extensions.Options;
+using System;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Flipdish.Recruiting.Core.Services.EmailSender
@@ -10,18 +13,30 @@ namespace Flipdish.Recruiting.Core.Services.EmailSender
 
     public class SmtpClientWrapper : ISmtpClientWrapper
     {
-
+        private SmtpConfig _stmpConfig;
         public SmtpClient SmtpClient { get; set; }
-        public SmtpClientWrapper()
+
+        public SmtpClientWrapper(IOptions<SmtpConfig> stmpConfig)
         {
+            _stmpConfig = stmpConfig.Value;
+
+            SmtpClient = new SmtpClient(_stmpConfig.Host)
+            {
+                Port = Convert.ToInt32(_stmpConfig.Port),
+                Credentials = new NetworkCredential(_stmpConfig.UserName, _stmpConfig.Password),
+                EnableSsl = true,
+            };
         }
-        public async Task Send(MailMessage mailMessage) => await Task.Delay(2);
+
+        public async Task Send(MailMessage mailMessage)
+        {
+            try
+            {
+                await SmtpClient.SendMailAsync(mailMessage);
+            }
+            catch (Exception)
+            {}
+        }
     }
 }
 
-//var smtpClient = new SmtpClient("smtp.gmail.com")
-//{
-//    Port = 587,
-//    Credentials = new NetworkCredential("email", "password"),
-//    EnableSsl = true,
-//};
