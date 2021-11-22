@@ -1,0 +1,11 @@
+﻿using System;
+
+namespace Flipdish.Recruiting.Core.Models
+{
+    public class OrderCreatedWebhook
+    {
+        public string Type { get; set; }
+        public DateTime CreateTime { get;set;}
+        public OrderCreatedEvent Body { get; set; }
+    }
+}

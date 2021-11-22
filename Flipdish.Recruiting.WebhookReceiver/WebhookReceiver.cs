@@ -8,102 +8,152 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Flipdish.Recruiting.WebhookReceiver.Models;
-using System.Collections.Generic;
+using Flipdish.Recruiting.Core.Models;
+using Flipdish.Recruiting.Core.Services.EmailSender;
+using Microsoft.Extensions.Options;
 
 namespace Flipdish.Recruiting.WebhookReceiver
 {
-    public static class WebhookReceiver
+    public interface IWebhookReceiver
     {
-        [FunctionName("WebhookReceiver")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
-            ILogger log,
-            ExecutionContext context)
+        Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log, ExecutionContext context);
+    }
+
+    public class WebhookReceiver : IWebhookReceiver
+    {
+        private readonly IEmailService _emailService;
+        private readonly IEmailRendererService _emailRendererService;
+        private SmtpConfig _stmpConfig;
+        private ILogger _logger;
+
+        public WebhookReceiver(IEmailService emailService, IEmailRendererService emailRendererService, IOptions<SmtpConfig> stmpConfig)
         {
-            int? orderId = null;
+            _stmpConfig = stmpConfig.Value;
+            _emailService = emailService;
+            _emailRendererService = emailRendererService;
+        }
+
+        [FunctionName("WebhookReceiver")]
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req, ILogger log, ExecutionContext context)
+        {
+            _logger = log;
             try
             {
                 log.LogInformation("C# HTTP trigger function processed a request.");
+                var queryInfo = new QueryInfo(req.Query);
 
-                OrderCreatedWebhook orderCreatedWebhook;
-
-                string test = req.Query["test"];
-                if(req.Method == "GET" && !string.IsNullOrEmpty(test))
+                var orderCreatedWebhook = req.Method switch
                 {
+                    "GET" => GetAction(context, queryInfo),
+                    "POST" => await PostActionAsync(req),
+                    _ => UnknownMethodError()
+                };
 
-                    var templateFilePath = Path.Combine(context.FunctionAppDirectory, "TestWebhooks", test);
-                    var testWebhookJson = new StreamReader(templateFilePath).ReadToEnd();
-
-                    orderCreatedWebhook = JsonConvert.DeserializeObject<OrderCreatedWebhook>(testWebhookJson);
-                }
-                else if (req.Method == "POST")
-                {
-                    string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                    orderCreatedWebhook = JsonConvert.DeserializeObject<OrderCreatedWebhook>(requestBody);
-                }
-                else
-                {
-                    throw new Exception("No body found or test param.");
-                }
-                OrderCreatedEvent orderCreatedEvent = orderCreatedWebhook.Body;
-
-                orderId = orderCreatedEvent.Order.OrderId;
-                List<int> storeIds = new List<int>();
-                string[] storeIdParams = req.Query["storeId"].ToArray();
-                if (storeIdParams.Length > 0)
-                {
-                    foreach (var storeIdString in storeIdParams)
-                    {
-                        int storeId = 0;
-                        try 
-                        {
-                            storeId = int.Parse(storeIdString);
-                        }
-                        catch(Exception) {}
-                        
-                        storeIds.Add(storeId);
-                    }
-
-                    if (!storeIds.Contains(orderCreatedEvent.Order.Store.Id.Value))
-                    {
-                        log.LogInformation($"Skipping order #{orderId}");
-                        return new ContentResult { Content = $"Skipping order #{orderId}", ContentType = "text/html" };
-                    }
-                }
-
-
-                Currency currency = Currency.EUR;
-                var currencyString = req.Query["currency"].FirstOrDefault();
-                if(!string.IsNullOrEmpty(currencyString) && Enum.TryParse(typeof(Currency), currencyString.ToUpper(), out object currencyObject))
-                {
-                    currency = (Currency)currencyObject;
-                }
-
-                var barcodeMetadataKey = req.Query["metadataKey"].First() ?? "eancode";
-
-                using EmailRenderer emailRenderer = new EmailRenderer(orderCreatedEvent.Order, orderCreatedEvent.AppId, barcodeMetadataKey, context.FunctionAppDirectory, log, currency);
-                
-                var emailOrder = emailRenderer.RenderEmailOrder();
-
-                try
-                {
-                    EmailService.Send("", req.Query["to"], $"New Order #{orderId}", emailOrder, emailRenderer._imagesWithNames);
-                }
-                catch(Exception ex)
-                {
-                    log.LogError($"Error occured during sending email for order #{orderId}" + ex);
-                }
-
-                log.LogInformation($"Email sent for order #{orderId}.", new { orderCreatedEvent.Order.OrderId });
-
-                return new ContentResult { Content = emailOrder, ContentType = "text/html" };
+                return await ProcessOrder(orderCreatedWebhook.Body, queryInfo, context);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                log.LogError(ex, $"Error occured during processing order #{orderId}");
                 throw ex;
             }
         }
+
+        #region Private Methods
+        private async Task<ContentResult> ProcessOrder(OrderCreatedEvent orderCreatedEvent, QueryInfo queryInfo, ExecutionContext context)
+        {
+            var orderId = orderCreatedEvent.Order.OrderId;
+            try
+            {
+                if (!MatchStoreIdAndOrderStoreId(queryInfo, orderCreatedEvent))
+                {
+                    _logger.LogInformation($"Skipping order #{orderId}");
+                    return new ContentResult { Content = $"Skipping order #{orderId}", ContentType = "text/html" };
+                }
+
+                var emailOrder = CreateEmailOrder(context, orderId, queryInfo, orderCreatedEvent);
+                await SendEmailOrder(orderId, queryInfo, emailOrder);
+
+                _logger.LogInformation($"Email sent for order #{orderId}.", new { orderCreatedEvent.Order.OrderId });
+
+                return new ContentResult { Content = emailOrder, ContentType = "text/html",};
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occured during processing order #{orderId}");
+                throw;
+            }
+        }
+
+        private async Task SendEmailOrder(int? orderId, QueryInfo queryInfo, string emailOrder)
+        {
+            try
+            {
+                await _emailService.SendAsync(_stmpConfig.From, queryInfo.EmailsTo, $"New Order #{orderId}", emailOrder, _emailRendererService.ImagesWithNames);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured during sending email for order #{orderId}" + ex);
+                throw;
+            }
+        }
+
+        private string CreateEmailOrder(ExecutionContext context, int? orderId, QueryInfo queryInfo, OrderCreatedEvent orderCreatedEvent)
+        {
+            try
+            {
+               return _emailRendererService.RenderEmailOrder(orderCreatedEvent.Order, orderCreatedEvent.AppId, queryInfo.MetadataKey,
+                context.FunctionAppDirectory, queryInfo.Currency);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured during email redering for order #{orderId}" + ex);
+                throw;
+            }
+        }
+
+        private OrderCreatedWebhook GetAction(ExecutionContext context, QueryInfo queryInfo)
+        {
+            if (IsDevEnvironment(queryInfo.DevEnvironment))
+            {
+                var templateFilePath = Path.Combine(context.FunctionAppDirectory, "TestWebhooks", queryInfo.DevEnvironment);
+                var testWebhookJson = new StreamReader(templateFilePath).ReadToEnd();
+
+                return JsonConvert.DeserializeObject<OrderCreatedWebhook>(testWebhookJson);
+            }
+            else
+            {
+                var errorMessage = "No test param found.";
+               _logger.LogError(errorMessage);
+                throw new ArgumentNullException(errorMessage);
+            }
+        }
+
+        private async Task<OrderCreatedWebhook> PostActionAsync(HttpRequest req)
+        {
+            try
+            {
+                var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                return JsonConvert.DeserializeObject<OrderCreatedWebhook>(requestBody);
+            }
+            catch (Exception ex )
+            {
+                var errorMessage = "No body found.";
+               _logger.LogError(errorMessage);
+                throw new ArgumentNullException(errorMessage, ex);
+            }
+        }
+
+        private OrderCreatedWebhook UnknownMethodError()
+        {
+            var errorMessage = "Unknown request methdod.";
+            _logger.LogInformation(errorMessage);
+            throw new ArgumentNullException(errorMessage);
+        }
+
+        private bool IsDevEnvironment(string testParam) => !string.IsNullOrEmpty(testParam);
+
+        private bool MatchStoreIdAndOrderStoreId(QueryInfo query, OrderCreatedEvent orderCreatedEvent) => query.StoreIds.Contains(orderCreatedEvent.Order.Store.Id.Value);
+        #endregion
     }
 }
