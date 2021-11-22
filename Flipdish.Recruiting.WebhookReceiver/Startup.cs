@@ -23,12 +23,6 @@ namespace Flipdish.Recruiting.WebhookReceiver
 
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            //IConfiguration configuration = new ConfigurationBuilder()
-            //    .SetBasePath(Directory.GetCurrentDirectory())
-            //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            //    .AddEnvironmentVariables()
-            //    .Build();
-
             builder.Services.AddOptions<SettingsService>()
              .Configure<IOptions<ExecutionContextOptions>>((mlSettings, exeContext) =>
                  FunctionConfig(exeContext.Value.AppDirectory).GetSection("Settings").Bind(mlSettings));
