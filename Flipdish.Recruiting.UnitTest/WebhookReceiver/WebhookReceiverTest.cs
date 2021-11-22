@@ -3,6 +3,7 @@ using Flipdish.Recruiting.Core.Services.EmailSender;
 using Flipdish.Recruiting.UnitTest.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -19,6 +20,7 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
     {
         private Mock<IEmailService> _emailService;
         private Mock<IEmailRendererService> _emailRendererService;
+        private Mock<IOptions<SmtpConfig>> _stmpConfig;
         private const string BodyResourceName = "Flipdish.Recruiting.UnitTest.Resources.BodySample.json";
         private ExecutionContext _executionContext;
         private Webhook _webhookReceiver;
@@ -28,12 +30,13 @@ namespace Flipdish.Recruiting.UnitTest.WebhookReceiver
         {
             _emailService = new Mock<IEmailService>();
             _emailRendererService = new Mock<IEmailRendererService>();
+            _stmpConfig = new Mock<IOptions<SmtpConfig>>();
             _executionContext = new ExecutionContext
             {
                 FunctionAppDirectory = "PATH"
             };
-
-            _webhookReceiver = new Webhook(_emailService.Object, _emailRendererService.Object);
+            _stmpConfig.Setup(x => x.Value).Returns(new SmtpConfig());
+            _webhookReceiver = new Webhook(_emailService.Object, _emailRendererService.Object, _stmpConfig.Object);
         }
 
         [Test]
